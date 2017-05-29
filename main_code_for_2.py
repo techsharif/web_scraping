@@ -2,6 +2,7 @@ import string
 from Tkinter import *
 import tkMessageBox
 
+from database import store_data
 from digital_cameras import get_digital_cameras
 from phones import get_phones
 from ssd import get_ssds
@@ -41,9 +42,14 @@ def calculate_data():
         dp += float(dcamera_item['price'])
     # process_level.config(text='Total Price :' + str(sp+pp+dp))
     print "ok"
-    tkMessageBox.showinfo('Total Price', 'Total Price :$' + str(sp + pp + dp))
     print("file write")
     generate_html(ssd_items + phone_items + dcamera_items, str(sp + pp + dp))
+    result = tkMessageBox.askquestion("Total Price", 'Total Price :$' + str(sp + pp + dp)+"\n Do you want to store it?")
+    if result == 'yes':
+        store_data(ssd_items + phone_items + dcamera_items)
+        print "Data stored"
+    else:
+        print "Data not stored"
 
 
 master = Tk()

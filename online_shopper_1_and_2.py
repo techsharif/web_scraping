@@ -43,6 +43,7 @@
 
 # The function for opening a web document given its URL.
 # (You WILL need to use this function in your solution.)
+import os
 from urllib import urlopen
 import urllib2
 # Import the standard Tkinter functions. (You WILL need to use
@@ -59,7 +60,8 @@ from re import findall, finditer
 
 # Import the standard SQLite functions just in case they're
 # needed.
-from sqlite3 import *
+import sqlite3
+
 
 #
 # --------------------------------------------------------------------#
@@ -78,8 +80,6 @@ from sqlite3 import *
 
 # functions for different purpose
 
-# get dasa between two fixed string
-# result will be a list of all possible data
 def content_between_string(string, start, end):
     data = []
     start_pos = 0
@@ -95,7 +95,7 @@ def content_between_string(string, start, end):
         data += [string[start_pos:end_pos]]
     return data
 
-# to convert price string to int remove extra characters ex: ,
+
 def just_get_digits(st):
     s = ""
     for i in st:
@@ -103,7 +103,7 @@ def just_get_digits(st):
             s += i
     return s
 
-# Generate HTML data from invoce data
+
 def generate_html(data, total):
     str_top = '''<!doctype html>
 <html lang="en">
@@ -170,7 +170,7 @@ def generate_html(data, total):
     file.write(str_top + s + str_btm)
     file.close()
 
-# scraping digital camera data
+
 def get_digital_cameras(numbers):
     response = urllib2.urlopen('http://www.shopzilla.com/digital-cameras/402/products')
     html = str(response.read())
@@ -191,7 +191,7 @@ def get_digital_cameras(numbers):
             print 'error in' + d
     return digital_cameras[-numbers:]
 
-# scraping SSD data
+
 def get_ssds(numbers):
     response = urllib2.urlopen(
         'https://www.newegg.com/Product/ProductList.aspx?Submit=Property&Subcategory=636&N=100011693%20600488413%20601193225%20601193224%204814&IsNodeId=1&IsPowerSearch=1&cm_sp=CAT_SSD_2-_-VisNav-_-M.2_1')
@@ -213,7 +213,7 @@ def get_ssds(numbers):
 
     return ssds[-numbers:]
 
-# scraping phones data
+
 def get_phones(numbers):
     response = urllib2.urlopen('https://www.kogan.com/au/shop/phones/')
     html = str(response.read())
@@ -233,6 +233,31 @@ def get_phones(numbers):
             print 'error in' + d
 
     return phones[-numbers:]
+
+
+def store_data(data):
+    try:
+        # remove all data
+        os.remove('shopping_trolley.db')
+    except OSError:
+        pass
+    conn = sqlite3.connect('shopping_trolley.db')
+    c = conn.cursor()
+
+    # Create table
+    c.execute('''CREATE TABLE purchases
+                 (description text, price text)''')
+
+    for d in data:
+        # Insert a row of data
+        c.execute("INSERT INTO purchases VALUES ('" + d['title'] + "','" + d['price'] + "')")
+
+    # Save (commit) the changes
+    conn.commit()
+
+    # We can also close the connection if we are done with it.
+    # Just be sure any changes have been committed or they will be lost.
+    conn.close()
 
 
 def calculate_data():
@@ -260,12 +285,15 @@ def calculate_data():
         dcamera_item['price'] = just_get_digits(dcamera_item['price'])
         dp += float(dcamera_item['price'])
 
-    # show total price
-    tkMessageBox.showinfo('Total Price', 'Total Price :$' + str(sp + pp + dp)+"\nPlease see invoice.html for details")
     # generate html
     generate_html(ssd_items + phone_items + dcamera_items, str(sp + pp + dp))
+    result = tkMessageBox.askquestion("Total Price",
+                                      'Total Price :$' + str(sp + pp + dp) + "\n Do you want to store it?")
+    if result == 'yes':
+        store_data(ssd_items + phone_items + dcamera_items)
+        tkMessageBox.showinfo('Data saved',"Please see invoice.html for details \nand\nshow shopping_trolley.db to find stored data ")
 
-# declere base
+
 master = Tk()
 master.title = 'Online Shop'
 Label(master, text="Welcome To").grid(row=0)
@@ -288,4 +316,7 @@ e3.grid(row=5, column=1)
 
 process_level = Label(master, text="").grid(row=7)
 Button(master, text='Shop', command=calculate_data).grid(row=6, column=1, sticky=W, pady=4)
+# Button(master, text='Quit', command=master.quit).grid(row=8, column=1, sticky=W, pady=4)
+
+
 mainloop()
