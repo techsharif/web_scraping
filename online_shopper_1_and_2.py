@@ -1,25 +1,4 @@
-# -----Statement of Authorship----------------------------------------#
-#
-#  This is an individual assessment item.  By submitting this
-#  code I agree that it represents my own work.  I am aware of
-#  the University rule that a student must not act in a manner
-#  which constitutes academic dishonesty as stated and explained
-#  in QUT's Manual of Policies and Procedures, Section C/5.3
-#  "Academic Integrity" and Section E/2.1 "Student Code of Conduct".
-#
-#    Student no: *****PUT YOUR STUDENT NUMBER HERE*****
-#    Student name: *****PUT YOUR NAME HERE*****
-#
-#  NB: Files submitted without a completed copy of this statement
-#  will not be marked.  Submitted files will be subjected to
-#  software plagiarism analysis using the MoSS system
-#  (http://theory.stanford.edu/~aiken/moss/).
-#
-# --------------------------------------------------------------------#
-
-
-
-# -----Assignment Description-----------------------------------------#
+# -----Description-----------------------------------------#
 #
 #  Online Shopper
 #
